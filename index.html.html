@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe Funnel Vuelos LATAM — Microsoft Clarity · Mayo 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0d0d;
+    --ink-2: #3a3a3a;
+    --ink-3: #767676;
+    --ink-4: #b0b0b0;
+    --bg: #f5f3ee;
+    --bg-2: #ede9e1;
+    --bg-3: #e2ddd3;
+    --white: #ffffff;
+    --accent: #c0392b;
+    --accent-mx: #006847;
+    --accent-br: #009c3b;
+    --accent-ar: #74acdf;
+    --success: #2d6a4f;
+    --warning: #7d5a00;
+    --info: #1a4a7a;
+    --border: rgba(13,13,13,0.12);
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'Plus Jakarta Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+    --country: var(--ink);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-size: 15px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+
+  @media print {
+    .no-print { display: none !important; }
+    body { background: white; font-size: 12px; }
+    .card { box-shadow: none; border: 1px solid #ccc; }
+  }
+
+  .container { max-width: 980px; margin: 0 auto; padding: 0 32px; }
+
+  /* HERO */
+  .hero { background: var(--ink); color: var(--white); padding: 64px 0 48px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -60px; right: -80px; width: 420px; height: 420px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.06); }
+  .hero::after { content: ''; position: absolute; bottom: -100px; left: 40%; width: 320px; height: 320px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.04); }
+  .hero-eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: rgba(255,255,255,0.45); text-transform: uppercase; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+  .hero-eyebrow::before { content: ''; display: inline-block; width: 28px; height: 1px; background: rgba(255,255,255,0.3); }
+  .hero h1 { font-family: var(--serif); font-size: clamp(30px, 5vw, 50px); font-weight: 400; line-height: 1.12; color: var(--white); margin-bottom: 20px; max-width: 700px; }
+  .hero h1 em { font-style: italic; color: rgba(255,255,255,0.5); }
+  .hero-flags { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+  .flag-pill { display: flex; align-items: center; gap: 7px; padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.7); letter-spacing: 0.06em; }
+  .flag-pill span { width: 8px; height: 8px; border-radius: 50%; }
+  .flag-mx { background: #006847; }
+  .flag-br { background: #009c3b; }
+  .flag-ar { background: #74acdf; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .hero-meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .hero-meta-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: rgba(255,255,255,0.35); text-transform: uppercase; }
+  .hero-meta-value { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.85); }
+
+  /* COUNTRY SWITCHER */
+  .switcher { background: var(--white); border-bottom: 1px solid var(--border); padding: 0; position: sticky; top: 0; z-index: 200; }
+  .switcher-inner { display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: none; }
+  .switcher-inner::-webkit-scrollbar { display: none; }
+  .switcher-btn { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 20px; border: none; background: transparent; cursor: pointer; color: var(--ink-3); border-bottom: 3px solid transparent; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+  .switcher-btn:hover { background: var(--bg-2); color: var(--ink); }
+  .switcher-btn.active { color: var(--ink); border-bottom-color: var(--country-color, var(--ink)); }
+  .switcher-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* TOC */
+  .toc { background: var(--bg-2); border-bottom: 1px solid var(--border); padding: 10px 0; position: sticky; top: 49px; z-index: 100; }
+  .toc-inner { display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+  .toc-inner::-webkit-scrollbar { display: none; }
+  .toc-link { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); text-decoration: none; padding: 5px 10px; border-radius: 4px; white-space: nowrap; transition: all 0.15s; }
+  .toc-link:hover { background: var(--bg-3); color: var(--ink); }
+
+  main { padding: 60px 0 80px; }
+
+  /* COUNTRY PANEL */
+  .country-panel { display: none; }
+  .country-panel.active { display: block; }
+
+  /* SECTION */
+  .section { margin-bottom: 64px; }
+  .section-header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 28px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .section-number { font-family: var(--mono); font-size: 11px; color: var(--ink-4); letter-spacing: 0.06em; flex-shrink: 0; }
+  .section-title { font-family: var(--serif); font-size: 26px; font-weight: 400; color: var(--ink); line-height: 1.2; }
+
+  /* CONSOLIDATED */
+  .consolidated-header { background: var(--ink); color: var(--white); padding: 20px 28px; border-radius: 10px 10px 0 0; margin-bottom: 0; }
+  .consolidated-header h2 { font-family: var(--serif); font-size: 20px; font-weight: 400; }
+
+  /* EXEC BANNER */
+  .exec-banner { background: var(--white); border-left: 3px solid var(--accent); padding: 24px 28px; border-radius: 0 8px 8px 0; margin-bottom: 40px; }
+  .exec-banner p { font-size: 14px; line-height: 1.75; color: var(--ink-2); margin-bottom: 12px; }
+  .exec-banner p:last-child { margin-bottom: 0; }
+  .exec-banner strong { font-weight: 600; color: var(--ink); }
+  .exec-banner.mx { border-left-color: var(--accent-mx); }
+  .exec-banner.br { border-left-color: var(--accent-br); }
+  .exec-banner.ar { border-left-color: var(--accent-ar); }
+
+  /* METRIC GRID */
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 28px; }
+  .metric-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; overflow: hidden; }
+  .metric-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--bg-3); }
+  .metric-card.danger::after { background: var(--accent); }
+  .metric-card.warning::after { background: #e8963a; }
+  .metric-card.success::after { background: var(--success); }
+  .metric-card.info::after { background: var(--info); }
+  .metric-card.mx::after { background: var(--accent-mx); }
+  .metric-card.br::after { background: var(--accent-br); }
+  .metric-card.ar::after { background: var(--accent-ar); }
+  .metric-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px; }
+  .metric-value { font-family: var(--serif); font-size: 30px; font-weight: 400; color: var(--ink); line-height: 1; margin-bottom: 4px; }
+  .metric-value.danger { color: var(--accent); }
+  .metric-value.warning { color: #c07a00; }
+  .metric-value.success { color: var(--success); }
+  .metric-value.info { color: var(--info); }
+  .metric-sub { font-size: 11px; color: var(--ink-3); }
+
+  /* COMPARISON TABLE */
+  .compare-countries { width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .compare-countries th { background: var(--ink); color: rgba(255,255,255,0.75); font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; padding: 12px 16px; text-align: left; }
+  .compare-countries th.mx { background: #006847; color: rgba(255,255,255,0.9); }
+  .compare-countries th.br { background: #006622; color: rgba(255,255,255,0.9); }
+  .compare-countries th.ar { background: #3a6f9f; color: rgba(255,255,255,0.9); }
+  .compare-countries td { padding: 11px 16px; border-bottom: 1px solid var(--border); color: var(--ink-2); font-family: var(--mono); font-size: 12px; }
+  .compare-countries tr:last-child td { border-bottom: none; }
+  .compare-countries tr:nth-child(even) td { background: var(--bg); }
+  .compare-countries .td-label { color: var(--ink); font-weight: 500; font-family: var(--sans); font-size: 13px; }
+  .compare-countries .td-danger { color: var(--accent); font-weight: 500; }
+  .compare-countries .td-warning { color: #c07a00; font-weight: 500; }
+  .compare-countries .td-success { color: var(--success); font-weight: 500; }
+
+  /* FUNNEL */
+  .funnel { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .funnel-step { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-radius: 8px; background: var(--white); border: 1px solid var(--border); }
+  .funnel-step.step-1 { border-left: 4px solid var(--info); }
+  .funnel-step.step-2-mx { border-left: 4px solid var(--accent-mx); width: 82%; }
+  .funnel-step.step-2-br { border-left: 4px solid var(--accent-br); width: 30%; }
+  .funnel-step.step-2-ar { border-left: 4px solid var(--accent-ar); width: 40%; }
+  .funnel-step-label { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .funnel-step-url { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+  .funnel-step-count { font-family: var(--serif); font-size: 20px; color: var(--ink); white-space: nowrap; }
+  .funnel-conv { display: inline-block; font-family: var(--mono); font-size: 12px; padding: 3px 8px; border-radius: 4px; margin-left: 10px; }
+  .funnel-conv.bad { background: #fdecea; color: #8b1a1a; }
+  .funnel-conv.ok { background: #dff0e8; color: #1a5235; }
+  .funnel-arrow { text-align: left; padding-left: 24px; font-size: 11px; color: var(--ink-4); font-family: var(--mono); letter-spacing: 0.05em; }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* THREE COL */
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media (max-width: 700px) { .three-col { grid-template-columns: 1fr; } }
+
+  /* CARD */
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .card-title.success { color: var(--success); }
+  .card-title.danger { color: var(--accent); }
+
+  /* COMPARE PAIR */
+  .compare-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-bottom: 16px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .compare-half { padding: 18px 20px; }
+  .compare-half:first-child { border-right: 1px solid var(--border); background: #f0f7f3; }
+  .compare-half:last-child { background: #fdf3f2; }
+  .compare-header { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+  .compare-header.success { color: var(--success); }
+  .compare-header.danger { color: var(--accent); }
+  .compare-row { display: flex; flex-direction: column; gap: 10px; }
+  .compare-item { display: flex; flex-direction: column; gap: 2px; }
+  .compare-item-label { font-size: 11px; color: var(--ink-3); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
+  .compare-item-val { font-family: var(--serif); font-size: 24px; color: var(--ink); }
+  .compare-item-val.success { color: var(--success); }
+  .compare-item-val.danger { color: var(--accent); }
+
+  /* LIST */
+  .insight-list { list-style: none; }
+  .insight-list li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--ink-2); line-height: 1.6; }
+  .insight-list li:last-child { border-bottom: none; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+  .dot-danger { background: var(--accent); }
+  .dot-warning { background: #d48000; }
+  .dot-success { background: var(--success); }
+  .dot-info { background: var(--info); }
+
+  /* BAR */
+  .bar-list { display: flex; flex-direction: column; gap: 9px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+  .bar-label { font-size: 12px; color: var(--ink-2); min-width: 160px; font-family: var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { flex: 1; background: var(--bg-2); border-radius: 3px; height: 8px; }
+  .bar-fill { height: 8px; border-radius: 3px; }
+  .bar-val { min-width: 48px; text-align: right; font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--ink); }
+
+  /* DEVICE */
+  .device-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .device-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .device-icon { font-size: 22px; margin-bottom: 6px; }
+  .device-name { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-3); margin-bottom: 4px; }
+  .device-val { font-family: var(--serif); font-size: 22px; color: var(--ink); }
+  .device-pct { font-size: 11px; color: var(--ink-3); }
+
+  /* LCP TABLE */
+  .lcp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .lcp-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--bg-2); }
+  .lcp-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--ink-2); font-family: var(--mono); font-size: 12px; }
+  .lcp-table tr:last-child td { border-bottom: none; }
+  .val-danger { color: var(--accent); font-weight: 500; }
+  .val-warning { color: #c07a00; font-weight: 500; }
+  .val-ok { color: var(--success); font-weight: 500; }
+
+  /* RECS */
+  .rec-item { display: flex; gap: 16px; padding: 20px; background: var(--white); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; }
+  .rec-badge { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 10px; font-weight: 500; color: white; flex-shrink: 0; margin-top: 2px; }
+  .rec-badge.p1 { background: var(--accent); }
+  .rec-badge.p2 { background: #c07a00; }
+  .rec-badge.p3 { background: var(--success); }
+  .rec-body { flex: 1; }
+  .rec-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+  .rec-desc { font-size: 13px; color: var(--ink-2); line-height: 1.65; }
+  .rec-metric { font-family: var(--mono); font-size: 11px; color: var(--ink-4); margin-top: 8px; }
+
+  /* HYP */
+  .hyp-item { background: var(--white); border: 1px solid var(--border); border-left: 3px solid var(--info); border-radius: 0 8px 8px 0; padding: 14px 18px; display: flex; gap: 14px; margin-bottom: 8px; }
+  .hyp-code { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--info); white-space: nowrap; padding-top: 1px; }
+  .hyp-text { font-size: 13px; color: var(--ink-2); line-height: 1.65; }
+
+  /* NOTE */
+  .note { background: var(--bg-2); border-radius: 6px; padding: 12px 16px; font-size: 12px; color: var(--ink-3); line-height: 1.65; margin-top: 12px; }
+  .note strong { font-weight: 600; color: var(--ink-2); }
+
+  /* TAG */
+  .tag { display: inline-block; font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; }
+  .tag-danger { background: #fdecea; color: #8b1a1a; }
+  .tag-warning { background: #fef3dc; color: #7d4d00; }
+  .tag-success { background: #dff0e8; color: #1a5235; }
+  .tag-info { background: #deeaf7; color: #0d2e50; }
+
+  /* PRIORITY LABEL */
+  .priority-label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; margin-top: 24px; }
+  .priority-label.p1 { color: var(--accent); }
+  .priority-label.p2 { color: #c07a00; }
+  .priority-label.p3 { color: var(--success); }
+
+  /* COUNTRY FLAG BADGE */
+  .country-badge { display: inline-flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; }
+  .country-badge.mx { background: #e8f5f0; color: #006847; }
+  .country-badge.br { background: #e8f5eb; color: #006622; }
+  .country-badge.ar { background: #e8f0f9; color: #3a6f9f; }
+  .country-badge span { width: 6px; height: 6px; border-radius: 50%; }
+
+  hr.divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+  /* COUNTRY COLOR OVERRIDES */
+  [data-country="mx"] .exec-banner { border-left-color: var(--accent-mx); }
+  [data-country="br"] .exec-banner { border-left-color: var(--accent-br); }
+  [data-country="ar"] .exec-banner { border-left-color: var(--accent-ar); }
+
+  /* MINI CHART BAR (for consolidated) */
+  .mini-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .mini-bar-label { font-family: var(--mono); font-size: 11px; color: var(--ink-3); width: 24px; }
+  .mini-bar-track { flex: 1; background: var(--bg-2); border-radius: 3px; height: 7px; }
+  .mini-bar-fill { height: 7px; border-radius: 3px; }
+  .mini-bar-val { font-family: var(--mono); font-size: 11px; color: var(--ink); min-width: 60px; text-align: right; }
+
+  /* DATA TABLE */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; overflow: hidden; border-radius: 10px; border: 1px solid var(--border); }
+  .data-table th { background: var(--ink); color: rgba(255,255,255,0.75); font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; padding: 10px 14px; text-align: left; }
+  .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:nth-child(even) td { background: var(--bg); }
+  .data-table .td-label { color: var(--ink); font-weight: 500; font-family: var(--sans); font-size: 13px; }
+  .data-table .td-danger { color: var(--accent); font-weight: 500; }
+  .data-table .td-warning { color: #c07a00; font-weight: 500; }
+  .data-table .td-success { color: var(--success); font-weight: 500; }
+
+  /* FOOTER */
+  footer { background: var(--ink); color: rgba(255,255,255,0.4); padding: 32px 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; margin-top: 40px; }
+  .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+
+  .dl-bar { background: var(--accent); color: white; padding: 10px 0; text-align: center; font-size: 12px; font-weight: 500; letter-spacing: 0.03em; cursor: pointer; transition: background 0.2s; }
+  .dl-bar:hover { background: #a93226; }
+
+  /* LCP ALERT BOX */
+  .lcp-alert { background: #fff5f5; border: 2px solid #c0392b; border-radius: 10px; padding: 28px 32px; margin-bottom: 32px; }
+  .lcp-alert-eyebrow { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #c0392b; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .lcp-alert-eyebrow::before { content: ''; display: inline-block; width: 18px; height: 2px; background: #c0392b; }
+  .lcp-alert h3 { font-family: var(--serif); font-size: 22px; font-weight: 400; color: var(--ink); margin-bottom: 10px; line-height: 1.2; }
+  .lcp-alert p { font-size: 13px; color: var(--ink-2); line-height: 1.75; margin-bottom: 10px; }
+  .lcp-alert p:last-of-type { margin-bottom: 16px; }
+  .lcp-numbers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+  @media (max-width: 640px) { .lcp-numbers { grid-template-columns: 1fr; } }
+  .lcp-num-card { background: var(--white); border: 1px solid rgba(192,57,43,0.25); border-radius: 8px; padding: 14px 16px; }
+  .lcp-num-country { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-3); margin-bottom: 4px; }
+  .lcp-num-val { font-family: var(--serif); font-size: 28px; color: #c0392b; line-height: 1; margin-bottom: 2px; }
+  .lcp-num-label { font-size: 11px; color: var(--ink-3); }
+  .lcp-threshold { display: inline-flex; align-items: center; gap: 6px; background: #dff0e8; border-radius: 4px; padding: 4px 10px; font-family: var(--mono); font-size: 11px; color: #1a5235; margin-top: 6px; }
+
+  /* GLOSSARY BOX */
+  .glossary { background: var(--bg-2); border-radius: 10px; padding: 20px 24px; margin-bottom: 48px; }
+  .glossary-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-3); margin-bottom: 14px; }
+  .glossary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; }
+  @media (max-width: 600px) { .glossary-grid { grid-template-columns: 1fr; } }
+  .glossary-item { display: flex; gap: 8px; align-items: baseline; font-size: 12px; }
+  .glossary-term { font-family: var(--mono); font-weight: 500; color: var(--ink); white-space: nowrap; min-width: 42px; }
+  .glossary-def { color: var(--ink-3); line-height: 1.5; }
+
+  .inline-code { font-family: var(--mono); font-size: 11px; background: var(--bg-2); padding: 2px 6px; border-radius: 3px; color: var(--ink-2); }
+
+  /* CONSOLIDATED OVERVIEW CARD */
+  .overview-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  @media (max-width: 700px) { .overview-grid { grid-template-columns: 1fr; } }
+  .overview-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .overview-card-header { padding: 14px 18px 10px; }
+  .overview-card-flag { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .overview-card-flag::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+  .oc-mx .overview-card-flag { color: #006847; }
+  .oc-mx .overview-card-flag::before { background: #006847; }
+  .oc-br .overview-card-flag { color: #006622; }
+  .oc-br .overview-card-flag::before { background: #009c3b; }
+  .oc-ar .overview-card-flag { color: #3a6f9f; }
+  .oc-ar .overview-card-flag::before { background: #74acdf; }
+  .oc-mx { border-top: 4px solid #006847; }
+  .oc-br { border-top: 4px solid #009c3b; }
+  .oc-ar { border-top: 4px solid #74acdf; }
+  .overview-stat { font-family: var(--serif); font-size: 28px; font-weight: 400; color: var(--ink); }
+  .overview-stat-label { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+  .overview-card-body { padding: 0 18px 14px; border-top: 1px solid var(--border); margin-top: 12px; }
+  .overview-row { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .overview-row:last-child { border-bottom: none; }
+  .overview-row-label { color: var(--ink-3); font-family: var(--mono); font-size: 11px; }
+  .overview-row-val { font-family: var(--mono); font-size: 12px; color: var(--ink); font-weight: 500; }
+  .overview-row-val.red { color: var(--accent); }
+  .overview-row-val.green { color: var(--success); }
+  .overview-row-val.amber { color: #c07a00; }
+</style>
+</head>
+<body>
+
+<div class="dl-bar no-print" onclick="window.print()">↓ Imprimir / Guardar como PDF</div>
+
+<header class="hero">
+  <div class="container">
+    <div class="hero-eyebrow">Microsoft Clarity · InsightfulPipe MCP · Análisis de Funnel</div>
+    <h1>Funnel de Vuelos <em>LATAM</em><br>Resultados → Checkout</h1>
+    <div class="hero-flags">
+      <div class="flag-pill"><span class="flag-mx"></span>México</div>
+      <div class="flag-pill"><span class="flag-br"></span>Brasil</div>
+      <div class="flag-pill"><span class="flag-ar"></span>Argentina</div>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Período</span>
+        <span class="hero-meta-value">23–25 Mayo 2026</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Funnel</span>
+        <span class="hero-meta-value">/flights/results/oneway/ → /checkout/</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Sesiones vuelos (total)</span>
+        <span class="hero-meta-value">~262.000 (MX + BR + AR)</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Fuente</span>
+        <span class="hero-meta-value">Microsoft Clarity MCP</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- SWITCHER -->
+<div class="switcher no-print">
+  <div class="container">
+    <div class="switcher-inner">
+      <button class="switcher-btn active" data-panel="consolidated" style="--country-color:#c0392b" onclick="switchPanel('consolidated', this)">
+        <span class="switcher-dot" style="background:var(--ink)"></span>Consolidado LATAM
+      </button>
+      <button class="switcher-btn" data-panel="mx" style="--country-color:#006847" onclick="switchPanel('mx', this)">
+        <span class="switcher-dot" style="background:#006847"></span>🇲🇽 México
+      </button>
+      <button class="switcher-btn" data-panel="br" style="--country-color:#009c3b" onclick="switchPanel('br', this)">
+        <span class="switcher-dot" style="background:#009c3b"></span>🇧🇷 Brasil
+      </button>
+      <button class="switcher-btn" data-panel="ar" style="--country-color:#74acdf" onclick="switchPanel('ar', this)">
+        <span class="switcher-dot" style="background:#74acdf"></span>🇦🇷 Argentina
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOC -->
+<nav class="toc no-print">
+  <div class="container">
+    <div class="toc-inner" id="toc">
+      <a class="toc-link" href="#resumen">Resumen</a>
+      <a class="toc-link" href="#funnel">Funnel</a>
+      <a class="toc-link" href="#comportamiento">Comportamiento</a>
+      <a class="toc-link" href="#fricciones">Fricciones</a>
+      <a class="toc-link" href="#dispositivos">Dispositivos</a>
+      <a class="toc-link" href="#insights">Insights</a>
+      <a class="toc-link" href="#recomendaciones">Recomendaciones</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<div class="container">
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PANEL CONSOLIDADO                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="panel-consolidated" class="country-panel active">
+
+  <section class="section" id="resumen">
+    <div class="section-header">
+      <span class="section-number">00</span>
+      <h2 class="section-title">Resumen ejecutivo — LATAM</h2>
+    </div>
+    <div class="exec-banner">
+      <p>El análisis consolidado de tres mercados clave — México, Brasil y Argentina — revela un <strong>patrón de fricciones técnicas compartidas</strong> que afectan la conversión en todo el funnel de vuelos oneway. Los tres países presentan LCP crítico en mobile (&gt;7 seg), CLS elevado (&gt;760 ms) y dead clicks masivos, tanto en resultados como en checkout.</p>
+      <p>Brasil es el mercado con mayor volumen (&gt;199K sesiones en vuelos) pero la <strong>conversión más baja explícita del funnel (14%)</strong>. Argentina tiene la mejor conversión documentada (19%) pero el CLS más extremo (994ms) y la mayor concentración de errores de JavaScript en checkout mobile (1.708). México presenta el checkout más demandado (62K sesiones) pero sin conversión calculable en directo por la arquitectura multi-producto del sitio.</p>
+      <p>La causa raíz transversal es el <strong>CLS alto en mobile</strong>, que provoca dead clicks en cascada: el layout se mueve durante la carga y los usuarios tocan elementos equivocados. Corregir el CLS tiene el mayor impacto potencial en los tres mercados.</p>
+    </div>
+
+    <!-- GLOSSÁRIO DE SIGLAS -->
+    <div class="glossary">
+      <div class="glossary-title">Glossário de siglas utilizadas neste informe</div>
+      <div class="glossary-grid">
+        <div class="glossary-item"><span class="glossary-term">LCP</span><span class="glossary-def">Largest Contentful Paint — tempo até o maior elemento visível da página terminar de carregar</span></div>
+        <div class="glossary-item"><span class="glossary-term">CLS</span><span class="glossary-def">Cumulative Layout Shift — mede quanto o layout "pula" durante o carregamento</span></div>
+        <div class="glossary-item"><span class="glossary-term">SERP</span><span class="glossary-def">Search Engine Results Page — página de listagem/resultados de voos</span></div>
+        <div class="glossary-item"><span class="glossary-term">UX</span><span class="glossary-def">User Experience — experiência do usuário</span></div>
+        <div class="glossary-item"><span class="glossary-term">CTA</span><span class="glossary-def">Call to Action — botão ou elemento que leva o usuário à próxima ação</span></div>
+        <div class="glossary-item"><span class="glossary-term">JS</span><span class="glossary-def">JavaScript — linguagem de programação usada no front-end do site</span></div>
+        <div class="glossary-item"><span class="glossary-term">MCP</span><span class="glossary-def">Model Context Protocol — protocolo que conecta Claude ao Microsoft Clarity</span></div>
+        <div class="glossary-item"><span class="glossary-term">PIX</span><span class="glossary-def">Sistema de pagamento instantâneo brasileiro (Banco Central do Brasil)</span></div>
+        <div class="glossary-item"><span class="glossary-term">SPA</span><span class="glossary-def">Single Page Application — aplicação que atualiza conteúdo sem recarregar a página inteira</span></div>
+        <div class="glossary-item"><span class="glossary-term">p75</span><span class="glossary-def">Percentil 75 — métrica padrão do Google para Core Web Vitals</span></div>
+      </div>
+    </div>
+
+    <!-- LCP ALERT BOX -->
+    <div class="lcp-alert">
+      <div class="lcp-alert-eyebrow">Problema crítico transversal</div>
+      <h3>LCP (Largest Contentful Paint): os três países estão em estado crítico</h3>
+      <p>O LCP mede quanto tempo o usuário espera até ver o conteúdo principal da página carregado. O Google considera aceitável qualquer valor abaixo de 2,5 segundos. Acima de 4 segundos já é classificado como "ruim". Nos três mercados analisados, os valores estão entre <strong>3× e 10× acima do limite aceitável</strong> — o que significa que o usuário fica olhando para uma tela em branco ou incompleta por vários segundos antes de poder interagir.</p>
+      <p>Em mobile, onde está concentrado 80–84% do tráfico em todos os países, esse atraso é ainda mais crítico: conexões mais lentas e menor tolerância ao tempo de espera fazem com que muitos usuários abandonem a página antes mesmo de ver os resultados de voos. O LCP alto no checkout agrava o problema no momento de maior intenção de compra — quando o usuário já escolheu o voo e está prestes a pagar.</p>
+      <div class="lcp-numbers">
+        <div class="lcp-num-card">
+          <div class="lcp-num-country">🇲🇽 México — vuelos</div>
+          <div class="lcp-num-val">25,7s</div>
+          <div class="lcp-num-label">média geral (10× o limite)</div>
+          <div class="lcp-num-country" style="margin-top:10px">Checkout</div>
+          <div class="lcp-num-val" style="font-size:20px">15,5s</div>
+        </div>
+        <div class="lcp-num-card">
+          <div class="lcp-num-country">🇧🇷 Brasil — vuelos mobile</div>
+          <div class="lcp-num-val">~8s</div>
+          <div class="lcp-num-label">média real (3× o limite)</div>
+          <div class="lcp-num-country" style="margin-top:10px">Checkout</div>
+          <div class="lcp-num-val" style="font-size:20px">21,9s</div>
+        </div>
+        <div class="lcp-num-card">
+          <div class="lcp-num-country">🇦🇷 Argentina — vuelos mobile</div>
+          <div class="lcp-num-val">7,3s</div>
+          <div class="lcp-num-label">média mobile (3× o limite)</div>
+          <div class="lcp-num-country" style="margin-top:10px">Checkout</div>
+          <div class="lcp-num-val" style="font-size:20px">11,6s</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;font-size:12px;color:var(--ink-3);font-family:var(--mono);">
+        Meta Google (Core Web Vitals): <span class="lcp-threshold">✓ LCP &lt; 2,5s = bom</span> &nbsp; <span style="background:#fef3dc;border-radius:4px;padding:4px 10px;color:#7d4d00;">2,5–4s = necessita melhoria</span> &nbsp; <span style="background:#fdecea;border-radius:4px;padding:4px 10px;color:#8b1a1a;">&gt; 4s = ruim</span>
+      </div>
+    </div>
+
+    <!-- OVERVIEW CARDS POR PAÍS -->
+    <div class="overview-grid">
+      <div class="overview-card oc-mx">
+        <div class="overview-card-header">
+          <div class="overview-card-flag">México</div>
+          <div class="overview-stat">24,679</div>
+          <div class="overview-stat-label">sesiones en vuelos oneway</div>
+        </div>
+        <div class="overview-card-body">
+          <div class="overview-row"><span class="overview-row-label">Checkout (total)</span><span class="overview-row-val">62,271</span></div>
+          <div class="overview-row"><span class="overview-row-label">Recurrentes</span><span class="overview-row-val green">66%</span></div>
+          <div class="overview-row"><span class="overview-row-label">Bounce rate</span><span class="overview-row-val green">12.8%</span></div>
+          <div class="overview-row"><span class="overview-row-label">Dead clicks (checkout)</span><span class="overview-row-val red">110,564</span></div>
+          <div class="overview-row"><span class="overview-row-label">LCP vuelos</span><span class="overview-row-val red">25.7s</span></div>
+          <div class="overview-row"><span class="overview-row-label">CLS vuelos</span><span class="overview-row-val red">761ms</span></div>
+        </div>
+      </div>
+      <div class="overview-card oc-br">
+        <div class="overview-card-header">
+          <div class="overview-card-flag">Brasil</div>
+          <div class="overview-stat">199,982</div>
+          <div class="overview-stat-label">sesiones en vuelos oneway</div>
+        </div>
+        <div class="overview-card-body">
+          <div class="overview-row"><span class="overview-row-label">Conversión vuelos→checkout</span><span class="overview-row-val amber">14%</span></div>
+          <div class="overview-row"><span class="overview-row-label">Recurrentes</span><span class="overview-row-val green">72%</span></div>
+          <div class="overview-row"><span class="overview-row-label">Dead clicks (vuelos)</span><span class="overview-row-val red">93,910</span></div>
+          <div class="overview-row"><span class="overview-row-label">JS errors (_nativeError)</span><span class="overview-row-val red">2,153</span></div>
+          <div class="overview-row"><span class="overview-row-label">LCP vuelos mobile</span><span class="overview-row-val red">~8s</span></div>
+          <div class="overview-row"><span class="overview-row-label">CLS vuelos</span><span class="overview-row-val red">807ms</span></div>
+        </div>
+      </div>
+      <div class="overview-card oc-ar">
+        <div class="overview-card-header">
+          <div class="overview-card-flag">Argentina</div>
+          <div class="overview-stat">38,165</div>
+          <div class="overview-stat-label">sesiones en vuelos oneway</div>
+        </div>
+        <div class="overview-card-body">
+          <div class="overview-row"><span class="overview-row-label">Conversión vuelos→checkout</span><span class="overview-row-val green">19%</span></div>
+          <div class="overview-row"><span class="overview-row-label">Recurrentes</span><span class="overview-row-val green">72%</span></div>
+          <div class="overview-row"><span class="overview-row-label">Dead clicks mobile (vuelos)</span><span class="overview-row-val red">15,706</span></div>
+          <div class="overview-row"><span class="overview-row-label">JS errors checkout mobile</span><span class="overview-row-val red">1,708</span></div>
+          <div class="overview-row"><span class="overview-row-label">LCP vuelos mobile</span><span class="overview-row-val red">7.3s</span></div>
+          <div class="overview-row"><span class="overview-row-label">CLS vuelos mobile</span><span class="overview-row-val red">994ms</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TABLA COMPARATIVA -->
+  <section class="section" id="funnel">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <h2 class="section-title">Comparación de métricas por país</h2>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="compare-countries">
+        <thead>
+          <tr>
+            <th>Métrica</th>
+            <th class="mx">🇲🇽 México</th>
+            <th class="br">🇧🇷 Brasil</th>
+            <th class="ar">🇦🇷 Argentina</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="td-label">Sesiones en vuelos oneway</td><td>24,679</td><td>199,982</td><td>38,165</td></tr>
+          <tr><td class="td-label">Sesiones en checkout</td><td>62,271 (multi-prod.)</td><td>27,954 (14% conv.)</td><td>65,345 (19% conv.*)</td></tr>
+          <tr><td class="td-label">Usuarios recurrentes</td><td class="td-success">66%</td><td class="td-success">72%</td><td class="td-success">72%</td></tr>
+          <tr><td class="td-label">Bounce rate (vuelos)</td><td class="td-success">12.8%</td><td>n/d</td><td>n/d</td></tr>
+          <tr><td class="td-label">Mobile share (vuelos)</td><td>80.8%</td><td>83.5%</td><td>81.9%</td></tr>
+          <tr><td class="td-label">Dead clicks (vuelos)</td><td class="td-danger">14,019</td><td class="td-danger">93,910</td><td class="td-danger">15,706</td></tr>
+          <tr><td class="td-label">Rage clicks (vuelos)</td><td class="td-warning">606</td><td class="td-danger">4,204</td><td class="td-warning">562</td></tr>
+          <tr><td class="td-label">Dead clicks (checkout)</td><td class="td-danger">110,564</td><td>n/d</td><td class="td-danger">18,966</td></tr>
+          <tr><td class="td-label">JS errors (checkout mobile)</td><td class="td-danger">438</td><td class="td-danger">2,153 (_nativeError)</td><td class="td-danger">1,708</td></tr>
+          <tr><td class="td-label">LCP vuelos promedio</td><td class="td-danger">25.7s</td><td class="td-danger">~8s (real mobile)</td><td class="td-danger">7.3s (mobile)</td></tr>
+          <tr><td class="td-label">LCP checkout</td><td class="td-warning">15.5s</td><td class="td-danger">21.9s</td><td class="td-danger">11.6s (mobile)</td></tr>
+          <tr><td class="td-label">CLS vuelos</td><td class="td-danger">761ms</td><td class="td-danger">807ms</td><td class="td-danger">994ms</td></tr>
+          <tr><td class="td-label">Quick backs (vuelos)</td><td class="td-warning">1,539</td><td>n/d</td><td class="td-danger">3,153</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note" style="margin-top:10px">* Argentina: conversión calculada sobre 7.264 sesiones con ambos pasos explícitos (vuelos→checkout en el mismo recorrido). México: checkout es multi-producto — no calculable de forma lineal. Brasil: 86% de abandono = 172K sesiones que no llegan a checkout.</div>
+
+    <!-- MINI VISUAL COMPARATIVO CLS -->
+    <div style="margin-top:28px">
+      <div class="card">
+        <div class="card-title">CLS vuelos mobile — comparación de países (umbral Google: &lt;100ms)</div>
+        <div class="bar-list">
+          <div class="bar-row">
+            <div class="bar-label">Argentina</div>
+            <div class="bar-track"><div class="bar-fill" style="width:100%;background:#c0392b"></div></div>
+            <div class="bar-val"><span class="tag tag-danger">994ms</span></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">Brasil</div>
+            <div class="bar-track"><div class="bar-fill" style="width:81%;background:#c0392b"></div></div>
+            <div class="bar-val"><span class="tag tag-danger">807ms</span></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">México</div>
+            <div class="bar-track"><div class="bar-fill" style="width:77%;background:#e8963a"></div></div>
+            <div class="bar-val"><span class="tag tag-danger">761ms</span></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">Umbral Google</div>
+            <div class="bar-track"><div class="bar-fill" style="width:10%;background:#2d6a4f"></div></div>
+            <div class="bar-val"><span class="tag tag-success">&lt;100ms</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PATRONES COMUNES -->
+  <section class="section" id="comportamiento">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <h2 class="section-title">Patrones de comportamiento comunes</h2>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title success">Qué funciona en los 3 mercados</div>
+        <ul class="insight-list">
+          <li><span class="dot dot-success"></span><strong>Alta fidelización:</strong> 66–72% de usuarios recurrentes en los tres países — base leal con intención de compra definida.</li>
+          <li><span class="dot dot-success"></span><strong>Marca fuerte:</strong> tráfico directo dominante en México (99.9%), brand awareness instalada en BR y AR.</li>
+          <li><span class="dot dot-success"></span><strong>Usuarios que convierten</strong> son más explorativos, ven más páginas y llegan con mayor intención: patrón consistente.</li>
+          <li><span class="dot dot-success"></span><strong>Checkout funcional cuando se completa:</strong> Brasil muestra sesiones de &lt;10 min en flows exitosos.</li>
+          <li><span class="dot dot-info"></span><strong>SOFIA</strong> actúa como soporte efectivo en México (1.550 salidas) — indica valor del asistente, aunque revela gaps en la SERP.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title danger">Problemas transversales a los 3 mercados</div>
+        <ul class="insight-list">
+          <li><span class="dot dot-danger"></span><strong>CLS crítico en mobile:</strong> layout se mueve durante la carga → dead clicks en cascada en todos los países.</li>
+          <li><span class="dot dot-danger"></span><strong>LCP &gt;7s en mobile:</strong> por encima del umbral "pobre" de Google en los 3 mercados.</li>
+          <li><span class="dot dot-danger"></span><strong>JS errors en checkout mobile:</strong> errores silenciosos que bloquean ventas sin feedback al usuario.</li>
+          <li><span class="dot dot-warning"></span><strong>Sensibilidad al precio:</strong> usuarios abandonan a páginas de ofertas/beneficios en México y Argentina.</li>
+          <li><span class="dot dot-warning"></span><strong>Cambio de fecha genera recarga completa</strong> (confirmado en Argentina): LCP repetido + pérdida de scroll y filtros.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECOMENDACIONES CONSOLIDADAS -->
+  <section class="section" id="recomendaciones">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <h2 class="section-title">Recomendaciones transversales LATAM</h2>
+    </div>
+    <p class="priority-label p1">Prioridad 1 — Aplicar en los 3 mercados · Impacto inmediato</p>
+    <div class="rec-item">
+      <div class="rec-badge p1">P1</div>
+      <div class="rec-body">
+        <div class="rec-title">Corregir CLS en mobile — causa raíz de dead clicks masivos</div>
+        <div class="rec-desc">El CLS entre 761–994ms en los tres países es la causa directa de 93K+ dead clicks en BR, 15K+ en AR y 14K+ en MX. Priorizar: reservar dimensiones fijas para imágenes y tarjetas de resultado antes de cargar, evitar inserciones de contenido encima del fold, y estabilizar banners/anuncios. Objetivo: CLS &lt;100ms en vuelos mobile.</div>
+        <div class="rec-metric">Impacto estimado: reducción de 40–60% en dead clicks y rage clicks mobile</div>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-badge p1">P1</div>
+      <div class="rec-body">
+        <div class="rec-title">Resolver JS errors en checkout mobile (MX: 438, BR: 2.153, AR: 1.708)</div>
+        <div class="rec-desc">Los errores de JavaScript en checkout mobile bloquean ventas silenciosamente. Activar monitoreo de errores por tipo y sistema operativo en Clarity. En Brasil el error <span class="inline-code">_nativeError</span> es recurrente — probablemente en el módulo de pagos o analytics. En Argentina los 1.708 errores vs. 52 en desktop (diferencia 33×) sugiere incompatibilidad con versiones de Android WebView.</div>
+        <div class="rec-metric">Impacto: conversión recuperable estimada 5–10% de sesiones afectadas</div>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-badge p1">P1</div>
+      <div class="rec-body">
+        <div class="rec-title">Optimizar LCP en vuelos y checkout — skeleton screens + carga progresiva</div>
+        <div class="rec-desc">LCP superior a 7 segundos en vuelos mobile en los 3 mercados. Implementar skeleton screens para mostrar estructura antes de resultados. Priorizar carga de los primeros 5–8 vuelos visibles con intersection observer para el resto. Revisar llamadas de API en cascada. Objetivo: LCP en el percentil 75 (p75) por debajo de 4s en mobile.</div>
+        <div class="rec-metric">Aplica a: México (25.7s vuelos, 15.5s checkout), Brasil (~8s vuelos, 21.9s checkout), Argentina (7.3s vuelos, 11.6s checkout)</div>
+      </div>
+    </div>
+
+    <p class="priority-label p2">Prioridad 2 — En 2–4 semanas</p>
+    <div class="rec-item">
+      <div class="rec-badge p2">P2</div>
+      <div class="rec-body">
+        <div class="rec-title">Implementar cambio de fecha sin recarga completa (SPA-style)</div>
+        <div class="rec-desc">Confirmado en Argentina (3.153 quick backs, LCP 12s al cambiar pasajeros). Cada cambio de fecha genera recarga completa con nuevo LCP, pérdida de scroll y filtros. Implementar actualización de resultados sin reload de página. Aplica potencialmente a los 3 mercados.</div>
+        <div class="rec-metric">Métrica: reducción de quick backs en mobile en 40%</div>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-badge p2">P2</div>
+      <div class="rec-body">
+        <div class="rec-title">Mejorar áreas táctiles en mobile — botones y CTAs (calls to action) de checkout</div>
+        <div class="rec-desc">Dead clicks en botones de pago, botones de selección de vuelo y campos de formulario son consistentes en los 3 países. Aumentar área táctil a mínimo 44×44px. En Brasil: botón "Copiar código PIX" con dead click en momento crítico. En Argentina: "Situación Fiscal IVA", "Sin asistencia", checkbox de Términos y Condiciones.</div>
+        <div class="rec-metric">Aplica con urgencia en BR (PIX) y AR (checkout mobile)</div>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-badge p2">P2</div>
+      <div class="rec-body">
+        <div class="rec-title">Añadir información clave inline en SERP de vuelos</div>
+        <div class="rec-desc">En México, 1.550 salidas a /sofia por dudas no resueltas en la SERP. En Brasil, usuarios buscan condiciones de equipaje y política de cambios antes de decidir. Mostrar inline: equipaje incluido, precio final con tasas, política de cancelación. Tooltip o panel deslizable en mobile.</div>
+      </div>
+    </div>
+
+    <p class="priority-label p3">Prioridad 3 — Mejora continua</p>
+    <div class="rec-item">
+      <div class="rec-badge p3">P3</div>
+      <div class="rec-body">
+        <div class="rec-title">Retención de usuarios sensibles al precio</div>
+        <div class="rec-desc">Salidas a /hot-sale, /beneficios, /ofertas-de-viajes en México y Argentina. Mostrar badge "Mejor precio" o cupones aplicables directamente en la SERP sin abandonar el flujo. Urgencia contextual (plazas disponibles). Aplica principalmente a México y Argentina.</div>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-badge p3">P3</div>
+      <div class="rec-body">
+        <div class="rec-title">Optimizar flujo de login — no disruptivo en mobile</div>
+        <div class="rec-desc">México: 354 salidas a /login. Argentina: login obligatorio antes de checkout genera drop en nuevos usuarios. Implementar login en overlay sin redirect, o guest checkout claro. Los usuarios recurrentes (66–72%) ya están logueados — el problema afecta principalmente a nuevos.</div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /panel-consolidated -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PANEL MÉXICO                               -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="panel-mx" class="country-panel" data-country="mx">
+
+  <section class="section" id="resumen">
+    <div class="section-header">
+      <span class="section-number">00</span>
+      <h2 class="section-title">Resumen ejecutivo — <span style="color:var(--accent-mx)">México</span></h2>
+    </div>
+    <div class="exec-banner mx">
+      <p>El funnel de vuelos oneway en México registró <strong>24,679 sesiones</strong> en la etapa de resultados durante el período 23–25 de mayo de 2026. El volumen total que alcanzó checkout fue de <strong>62,271 sesiones</strong>, cifra superior al tráfico exclusivo de vuelos oneway, lo que indica que checkout es alimentado por múltiples productos (hoteles, paquetes, etc.) y no puede calcularse una tasa de conversión lineal directa.</p>
+      <p>Los usuarios que llegaron a checkout presentan conducta marcadamente diferente: duran <strong>2.4x más</strong>, ven <strong>2.1x más páginas</strong> y hacen scroll completo al <strong>99%</strong> de la SERP (página de resultados de vuelos). El análisis revela fricciones críticas de rendimiento — el <strong>LCP (Largest Contentful Paint, tiempo de carga del contenido principal) llega a 25.7 segundos</strong>, 10× por encima del límite de Google —, UX (experiencia de usuario) rota en checkout con 110,564 dead clicks (clics en elementos que no responden) y un paso intermedio problemático en <strong>/cart</strong> con 1,111 salidas de alta intención.</p>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric-card info">
+        <div class="metric-label">Sesiones vuelos oneway</div>
+        <div class="metric-value">24,679</div>
+        <div class="metric-sub">3 días · mayo 2026</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Sesiones en checkout</div>
+        <div class="metric-value">62,271</div>
+        <div class="metric-sub">Multi-producto</div>
+      </div>
+      <div class="metric-card success">
+        <div class="metric-label">Usuarios recurrentes</div>
+        <div class="metric-value success">66%</div>
+        <div class="metric-sub">16,316 sesiones</div>
+      </div>
+      <div class="metric-card warning">
+        <div class="metric-label">Scroll promedio</div>
+        <div class="metric-value warning">56.9%</div>
+        <div class="metric-sub">Solo hasta mitad de página</div>
+      </div>
+      <div class="metric-card success">
+        <div class="metric-label">Bounce rate</div>
+        <div class="metric-value success">12.8%</div>
+        <div class="metric-sub">Alta intención de entrada</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Páginas / sesión</div>
+        <div class="metric-value">9.7</div>
+        <div class="metric-sub">239,739 páginas totales</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="funnel">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <h2 class="section-title">Datos del funnel</h2>
+    </div>
+    <div class="funnel">
+      <div class="funnel-step step-1">
+        <div>
+          <div class="funnel-step-label">Resultados de vuelos oneway</div>
+          <div class="funnel-step-url">/flights/results/oneway/</div>
+        </div>
+        <div class="funnel-step-count">24,679 sesiones</div>
+      </div>
+      <div class="funnel-arrow">↓ abandono — múltiples exit pages antes de checkout</div>
+      <div class="funnel-step step-2-mx">
+        <div>
+          <div class="funnel-step-label">Checkout (total multi-producto)</div>
+          <div class="funnel-step-url">/checkout/</div>
+        </div>
+        <div class="funnel-step-count">62,271 sesiones</div>
+      </div>
+    </div>
+    <div class="note">El volumen de checkout supera al de vuelos oneway porque múltiples productos (hoteles, paquetes, autos) alimentan el mismo /checkout/. La conversión lineal no puede calcularse por esta razón.</div>
+
+    <hr class="divider">
+    <h3 style="font-family:var(--serif);font-size:18px;font-weight:400;margin-bottom:16px;">Top páginas de salida — no llegan a checkout</h3>
+    <div class="card">
+      <div class="bar-list">
+        <div class="bar-row"><div class="bar-label">/ (Home)</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#c0392b"></div></div><div class="bar-val">2,331</div></div>
+        <div class="bar-row"><div class="bar-label">/sofia</div><div class="bar-track"><div class="bar-fill" style="width:66%;background:#e8623a"></div></div><div class="bar-val">1,550</div></div>
+        <div class="bar-row"><div class="bar-label">/cart</div><div class="bar-track"><div class="bar-fill" style="width:48%;background:#c0392b"></div></div><div class="bar-val">1,111</div></div>
+        <div class="bar-row"><div class="bar-label">/me/bookings</div><div class="bar-track"><div class="bar-fill" style="width:33%;background:#767676"></div></div><div class="bar-val">780</div></div>
+        <div class="bar-row"><div class="bar-label">/beneficios</div><div class="bar-track"><div class="bar-fill" style="width:29%;background:#d48000"></div></div><div class="bar-val">681</div></div>
+        <div class="bar-row"><div class="bar-label">/hot-sale</div><div class="bar-track"><div class="bar-fill" style="width:17%;background:#d48000"></div></div><div class="bar-val">389</div></div>
+        <div class="bar-row"><div class="bar-label">/login</div><div class="bar-track"><div class="bar-fill" style="width:15%;background:#c0392b"></div></div><div class="bar-val">354</div></div>
+      </div>
+      <div class="note">/cart (1,111) y /login (354) = intención alta frustrada. /sofia (1,550) = dudas no resueltas inline. /hot-sale + /beneficios (1,070) = sensibilidad al precio.</div>
+    </div>
+  </section>
+
+  <section class="section" id="comportamiento">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <h2 class="section-title">Llegan vs. no llegan a checkout</h2>
+    </div>
+    <div class="compare-pair">
+      <div class="compare-half">
+        <div class="compare-header success">✓ Llegan a checkout</div>
+        <div class="compare-row">
+          <div class="compare-item"><span class="compare-item-label">Duración sesión</span><span class="compare-item-val success">946 seg</span><span style="font-size:11px;color:var(--ink-3)">≈ 15.8 min</span></div>
+          <div class="compare-item"><span class="compare-item-label">Páginas / sesión</span><span class="compare-item-val success">13.7</span></div>
+          <div class="compare-item"><span class="compare-item-label">Scroll depth</span><span class="compare-item-val success">99%</span></div>
+        </div>
+      </div>
+      <div class="compare-half">
+        <div class="compare-header danger">✗ No llegan a checkout</div>
+        <div class="compare-row">
+          <div class="compare-item"><span class="compare-item-label">Duración sesión</span><span class="compare-item-val danger">393 seg</span><span style="font-size:11px;color:var(--ink-3)">≈ 6.6 min</span></div>
+          <div class="compare-item"><span class="compare-item-label">Páginas / sesión</span><span class="compare-item-val danger">6.4</span></div>
+          <div class="compare-item"><span class="compare-item-label">Scroll depth</span><span class="compare-item-val danger">73.6%</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="fricciones">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <h2 class="section-title">Fricciones detectadas</h2>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Vuelos oneway</div>
+        <div class="metric-grid" style="grid-template-columns:1fr 1fr;margin-bottom:14px">
+          <div class="metric-card danger"><div class="metric-label">Dead clicks</div><div class="metric-value danger" style="font-size:24px">14,019</div></div>
+          <div class="metric-card warning"><div class="metric-label">Rage clicks</div><div class="metric-value warning" style="font-size:24px">606</div></div>
+          <div class="metric-card warning"><div class="metric-label">Quick backs</div><div class="metric-value warning" style="font-size:24px">1,539</div></div>
+          <div class="metric-card danger"><div class="metric-label">JS errors</div><div class="metric-value danger" style="font-size:24px">438</div></div>
+        </div>
+        <div class="metric-grid" style="grid-template-columns:1fr 1fr">
+          <div class="metric-card danger"><div class="metric-label">LCP vuelos</div><div class="metric-value danger" style="font-size:22px">25.7s</div><div class="metric-sub">Meta: &lt;2.5s</div></div>
+          <div class="metric-card danger"><div class="metric-label">CLS vuelos</div><div class="metric-value danger" style="font-size:22px">761ms</div><div class="metric-sub">Meta: &lt;100ms</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Checkout</div>
+        <div class="metric-grid" style="grid-template-columns:1fr 1fr;margin-bottom:14px">
+          <div class="metric-card danger"><div class="metric-label">Dead clicks</div><div class="metric-value danger" style="font-size:20px">110,564</div></div>
+          <div class="metric-card danger"><div class="metric-label">Rage clicks</div><div class="metric-value danger" style="font-size:24px">4,040</div></div>
+        </div>
+        <div class="metric-grid" style="grid-template-columns:1fr 1fr">
+          <div class="metric-card warning"><div class="metric-label">LCP checkout</div><div class="metric-value warning" style="font-size:22px">15.5s</div></div>
+          <div class="metric-card warning"><div class="metric-label">CLS checkout</div><div class="metric-value warning" style="font-size:22px">562ms</div></div>
+        </div>
+        <div class="note" style="margin-top:12px">110,564 dead clicks = 7.9× el nivel de vuelos. Botones de pago y llamadas a la acción (CTAs) no responsivos son candidatos principales. Mobile (74% del tráfico) concentra la fricción.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="dispositivos">
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <h2 class="section-title">Dispositivos</h2>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Vuelos oneway</div>
+        <div class="device-grid">
+          <div class="device-card"><div class="device-icon">📱</div><div class="device-name">Mobile</div><div class="device-val">19,942</div><div class="device-pct">80.8%</div></div>
+          <div class="device-card"><div class="device-icon">🖥</div><div class="device-name">Desktop</div><div class="device-val">4,986</div><div class="device-pct">20.2%</div></div>
+          <div class="device-card"><div class="device-icon">📋</div><div class="device-name">Tablet</div><div class="device-val">964</div><div class="device-pct">3.9%</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">LCP por dispositivo (vuelos)</div>
+        <table class="lcp-table">
+          <thead><tr><th>Dispositivo</th><th>LCP promedio</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td>Mobile</td><td class="val-warning">7,218 ms</td><td><span class="tag tag-warning">Malo</span></td></tr>
+            <tr><td>Tablet</td><td class="val-danger">9,741 ms</td><td><span class="tag tag-danger">Crítico</span></td></tr>
+            <tr><td>Desktop</td><td class="val-danger">114,343 ms*</td><td><span class="tag tag-danger">Anómalo</span></td></tr>
+          </tbody>
+        </table>
+        <div class="note">*LCP desktop anómalo por sesiones con pestaña en background. Verificar el percentil 75 (p75) en Clarity. Ningún dispositivo está en rango aceptable (&lt;2.5s).</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="insights">
+    <div class="section-header">
+      <span class="section-number">05</span>
+      <h2 class="section-title">Hipótesis UX/Producto</h2>
+    </div>
+    <div class="hyp-item"><span class="hyp-code">H1</span><span class="hyp-text">El botón de selección de vuelo en mobile no tiene área de toque suficiente — usuarios hacen dead clicks en el cuerpo de la tarjeta en lugar del botón.</span></div>
+    <div class="hyp-item"><span class="hyp-code">H2</span><span class="hyp-text">La SERP no muestra información clave inline (equipaje, condiciones, precio final) — usuarios salen a /sofia para resolver dudas antes de comprometerse.</span></div>
+    <div class="hyp-item"><span class="hyp-code">H3</span><span class="hyp-code" style="color:var(--accent)">CRÍTICO</span> <span class="hyp-text">&nbsp;Fricción no resuelta en /cart — 1,111 salidas con intención alta son pérdidas evitables. Puede haber error de UI o precio diferente al mostrado en SERP.</span></div>
+    <div class="hyp-item"><span class="hyp-code">H4</span><span class="hyp-text">CLS alto (761ms) causa clics accidentales — el layout se mueve durante la carga y el usuario toca un elemento equivocado, contribuyendo a los 14,019 dead clicks.</span></div>
+    <div class="hyp-item"><span class="hyp-code">H5</span><span class="hyp-text">Usuarios sensibles al precio abandonan a /hot-sale y /beneficios porque la SERP no genera suficiente confianza o urgencia en el precio mostrado.</span></div>
+  </section>
+
+  <section class="section" id="recomendaciones">
+    <div class="section-header">
+      <span class="section-number">06</span>
+      <h2 class="section-title">Recomendaciones — México</h2>
+    </div>
+    <p class="priority-label p1">Prioridad 1 · Acción inmediata</p>
+    <div class="rec-item"><div class="rec-badge p1">P1</div><div class="rec-body"><div class="rec-title">Resolver dead clicks en checkout (110,564)</div><div class="rec-desc">Revisar heatmaps en Clarity (México + /checkout/ + mayo 2026). Verificar z-index de los botones de acción (CTAs), comportamiento de botones de pago en iOS Safari y Chrome Android. Asegurar que el botón "Pagar/Continuar" no tenga delay de JavaScript.</div><div class="rec-metric">Meta: reducir dead clicks en checkout en 50% en 30 días</div></div></div>
+    <div class="rec-item"><div class="rec-badge p1">P1</div><div class="rec-body"><div class="rec-title">Optimizar LCP en resultados de vuelos (25.7s)</div><div class="rec-desc">Skeleton screens + priorizar carga de los primeros 5–8 resultados. Diferir el resto con intersection observer. Revisar llamadas de API bloqueantes. Desktop (LCP 114s anómalo): investigar scripts de terceros.</div><div class="rec-metric">Meta: LCP en percentil 75 por debajo de 4s en mobile, 6s en desktop</div></div></div>
+    <div class="rec-item"><div class="rec-badge p1">P1</div><div class="rec-body"><div class="rec-title">Diagnosticar fricción en /cart (1,111 salidas)</div><div class="rec-desc">Revisar grabaciones en Clarity: México + exitURL=/cart + mayo 2026. Identificar error de UI, mensaje inesperado o precio diferente al de la SERP. Evaluar fusionar /cart con el inicio del checkout.</div><div class="rec-metric">Meta: reducir salidas desde /cart en 40%</div></div></div>
+    <p class="priority-label p2">Prioridad 2 · 2–4 semanas</p>
+    <div class="rec-item"><div class="rec-badge p2">P2</div><div class="rec-body"><div class="rec-title">Reducir salidas a /sofia (1,550) con info inline</div><div class="rec-desc">Identificar las 5 preguntas más frecuentes en /sofia post-vuelos. Añadir inline en tarjetas: equipaje incluido, precio final con tasas, política de cambios. Tooltip o panel deslizable en mobile.</div><div class="rec-metric">Meta: reducir salidas a /sofia desde vuelos en 30%</div></div></div>
+    <div class="rec-item"><div class="rec-badge p2">P2</div><div class="rec-body"><div class="rec-title">Mejorar botón de selección de vuelo en mobile</div><div class="rec-desc">Aumentar área de toque a mínimo 44×44px. Hacer toda la tarjeta clicable. Feedback visual inmediato al toque. Ningún elemento sobreponiendo el botón en mobile.</div><div class="rec-metric">Meta: reducir rage clicks mobile en vuelos en 40%</div></div></div>
+  </section>
+
+</div><!-- /panel-mx -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PANEL BRASIL                               -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="panel-br" class="country-panel" data-country="br">
+
+  <section class="section" id="resumen">
+    <div class="section-header">
+      <span class="section-number">00</span>
+      <h2 class="section-title">Resumen ejecutivo — <span style="color:var(--accent-br)">Brasil</span></h2>
+    </div>
+    <div class="exec-banner br">
+      <p>De <strong>199,982 sesiones</strong> en resultados de vuelos oneway, solo <strong>27,954 llegaron a checkout</strong>: una tasa de conversión del <strong>14%</strong> con abandono del 86% (172,028 sesiones perdidas). El perfil es predominantemente <strong>mobile (83.5%)</strong> y <strong>recurrente (72%)</strong>.</p>
+      <p>El hallazgo más crítico es el <strong>CLS (Cumulative Layout Shift — inestabilidad de layout durante la carga) de 807ms</strong> en resultados de vuelos, que triplica el umbral máximo de Google y es la raíz directa de los 93,910 dead clicks (clics en elementos que no responden) y 4,204 rage clicks (clics repetidos de frustración). El <strong>LCP (Largest Contentful Paint — tiempo hasta que el contenido principal carga) del checkout ronda los 21.9 segundos</strong> — casi 9× por encima del límite de Google — y existe un error de JavaScript recurrente (<span class="inline-code">_nativeError</span>) con 2,153 ocurrencias que desestabiliza la experiencia en checkout mobile.</p>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric-card info">
+        <div class="metric-label">Sesiones totales en vuelos</div>
+        <div class="metric-value">199,982</div>
+        <div class="metric-sub">Mayor volumen de los 3 países</div>
+      </div>
+      <div class="metric-card warning">
+        <div class="metric-label">Conversión vuelos→checkout</div>
+        <div class="metric-value warning">14%</div>
+        <div class="metric-sub">27,954 sesiones · 86% abandono</div>
+      </div>
+      <div class="metric-card success">
+        <div class="metric-label">Usuarios recurrentes</div>
+        <div class="metric-value success">72%</div>
+        <div class="metric-sub">143,395 sesiones</div>
+      </div>
+      <div class="metric-card danger">
+        <div class="metric-label">Dead clicks vuelos</div>
+        <div class="metric-value danger">93,910</div>
+        <div class="metric-sub">Raíz: CLS 807ms</div>
+      </div>
+      <div class="metric-card danger">
+        <div class="metric-label">LCP vuelos mobile</div>
+        <div class="metric-value danger">~8s</div>
+        <div class="metric-sub">Meta Google: &lt;2.5s</div>
+      </div>
+      <div class="metric-card danger">
+        <div class="metric-label">LCP checkout</div>
+        <div class="metric-value danger">21.9s</div>
+        <div class="metric-sub">15–30s confirmado en grabaciones</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="funnel">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <h2 class="section-title">Datos del funnel</h2>
+    </div>
+    <div class="funnel">
+      <div class="funnel-step step-1">
+        <div><div class="funnel-step-label">Resultados de vuelos oneway</div><div class="funnel-step-url">/flights/results/oneway/</div></div>
+        <div class="funnel-step-count">199,982 sesiones</div>
+      </div>
+      <div class="funnel-arrow">↓ 86% abandona — 172,028 sesiones no llegan a checkout</div>
+      <div class="funnel-step step-2-br">
+        <div><div class="funnel-step-label">Checkout</div><div class="funnel-step-url">/checkout/</div></div>
+        <div class="funnel-step-count">27,954 <span class="funnel-conv bad">14%</span></div>
+      </div>
+    </div>
+    <div class="note">El total de sesiones con /checkout/ en el período es 269,462, incluyendo entradas directas sin pasar por resultados de vuelos.</div>
+
+    <hr class="divider">
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Fuentes de tráfico</div>
+        <div class="bar-list">
+          <div class="bar-row"><div class="bar-label">Directo</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#1a4a7a"></div></div><div class="bar-val">mayoritario</div></div>
+          <div class="bar-row"><div class="bar-label">chatgpt.com</div><div class="bar-track"><div class="bar-fill" style="width:5%;background:#2d6a4f"></div></div><div class="bar-val">915</div></div>
+        </div>
+        <div class="note">Usuarios llegando desde ChatGPT (915 sesiones) — potencial alto de intención de compra. Analizar su tasa de conversión vs. tráfico directo.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Usuarios que convierten vs. abandonan</div>
+        <ul class="insight-list">
+          <li><span class="dot dot-success"></span>Convierten: visitan 2× más páginas, ajustan fechas ±1–2 días, usan cupones activamente, llegan logueados.</li>
+          <li><span class="dot dot-danger"></span>Abandonan: 6–8 re-búsquedas sin criterio claro, quick backs frecuentes, dejan la SERP sin seleccionar vuelo.</li>
+          <li><span class="dot dot-warning"></span>Diferencia clave: ajuste deliberado de fechas = señal de alta intención (no loop de abandono).</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="fricciones">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <h2 class="section-title">Fricciones principales</h2>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Vuelos oneway — mobile (83.5%)</div>
+        <div class="metric-grid" style="grid-template-columns:1fr 1fr;margin-bottom:14px">
+          <div class="metric-card danger"><div class="metric-label">Dead clicks</div><div class="metric-value danger" style="font-size:20px">93,910</div></div>
+          <div class="metric-card danger"><div class="metric-label">Rage clicks</div><div class="metric-value danger" style="font-size:22px">4,204</div></div>
+          <div class="metric-card warning"><div class="metric-label">Sesiones rage click</div><div class="metric-value warning" style="font-size:22px">1,109</div><div class="metric-sub">en mobile</div></div>
+          <div class="metric-card danger"><div class="metric-label">CLS</div><div class="metric-value danger" style="font-size:22px">807ms</div><div class="metric-sub">raíz causa</div></div>
+        </div>
+        <ul class="insight-list">
+          <li><span class="dot dot-danger"></span>CLS 807ms = raíz directa de dead/rage clicks masivos. El layout se mueve y el usuario toca elementos equivocados.</li>
+          <li><span class="dot dot-danger"></span>Dead click en autocompletado de ciudades — dropdown tarda en aparecer en mobile (ej: "Lisboa, Lisboa, Portugal").</li>
+          <li><span class="dot dot-warning"></span>18,898 sesiones afectadas por quick backs (9.4%) — 17,183 eventos en mobile.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Checkout — fricciones críticas</div>
+        <div class="metric-grid" style="grid-template-columns:1fr 1fr;margin-bottom:14px">
+          <div class="metric-card danger"><div class="metric-label">JS errors (_nativeError)</div><div class="metric-value danger" style="font-size:20px">2,153</div></div>
+          <div class="metric-card danger"><div class="metric-label">LCP checkout</div><div class="metric-value danger" style="font-size:22px">21.9s</div></div>
+        </div>
+        <ul class="insight-list">
+          <li><span class="dot dot-danger"></span><strong>Botón "Copiar código PIX" con dead click</strong> — falla en el momento más crítico de la transacción. Usuarios que completaron el checkout no pueden copiar el código de pago.</li>
+          <li><span class="dot dot-danger"></span>LCP 21.9s en checkout (15–30s confirmado en grabaciones) — percibido como página rota antes del formulario.</li>
+          <li><span class="dot dot-warning"></span>Usuarios salen de checkout a /beneficios buscando cupones y no siempre regresan.</li>
+          <li><span class="dot dot-info"></span>El botón "Tente novamente" funciona como recovery efectivo pero requiere reiniciar todo el checkout.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="dispositivos">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <h2 class="section-title">Dispositivos</h2>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Vuelos oneway</div>
+        <div class="device-grid">
+          <div class="device-card"><div class="device-icon">📱</div><div class="device-name">Mobile</div><div class="device-val">~167K</div><div class="device-pct">83.5%</div></div>
+          <div class="device-card"><div class="device-icon">🖥</div><div class="device-name">Desktop</div><div class="device-val">~30K</div><div class="device-pct">14%</div></div>
+          <div class="device-card"><div class="device-icon">📋</div><div class="device-name">Tablet</div><div class="device-val">~5K</div><div class="device-pct">2.5%</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">LCP por dispositivo</div>
+        <table class="lcp-table">
+          <thead><tr><th>Etapa</th><th>LCP real</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td>Vuelos mobile</td><td class="val-danger">~8s</td><td><span class="tag tag-danger">Crítico</span></td></tr>
+            <tr><td>Vuelos PC</td><td class="val-warning">213s* (anomalía)</td><td><span class="tag tag-danger">Anómalo</span></td></tr>
+            <tr><td>Checkout</td><td class="val-danger">21.9s</td><td><span class="tag tag-danger">Crítico</span></td></tr>
+          </tbody>
+        </table>
+        <div class="note">*LCP PC inflado por sesiones con pestaña en background durante horas. LCP real en grabaciones: 2–15s. Tablet tiene mayor presencia en checkout (6.2%) vs vuelos (2.5%) — posible uso para finalizar compras iniciadas en mobile.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="insights">
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <h2 class="section-title">Hipótesis UX/Producto</h2>
+    </div>
+    <div class="hyp-item"><span class="hyp-code">H1</span><span class="hyp-text">Corregir CLS en mobile (&lt;100ms) reduciría dead/rage clicks en ~40% y mejoraría el scroll depth hasta los resultados relevantes.</span></div>
+    <div class="hyp-item"><span class="hyp-code">H2</span><span class="hyp-text">Corregir el dead click en "Copiar código PIX" retendría entre 5–8% de pagos iniciados que actualmente se cancelan en la pantalla de confirmación.</span></div>
+    <div class="hyp-item"><span class="hyp-code">H3</span><span class="hyp-text">Reducir LCP del checkout a &lt;5s incrementaría directamente la tasa de finalización del formulario, especialmente en mobile con conexiones más lentas.</span></div>
+    <div class="hyp-item"><span class="hyp-code">H4</span><span class="hyp-text">Implementar login en overlay (sin redirect) o guest checkout aumentaría conversión especialmente en nuevos usuarios que abandonan en el paso de autenticación.</span></div>
+    <div class="hyp-item"><span class="hyp-code">H5</span><span class="hyp-text">Los 915 usuarios que llegan desde chatgpt.com tienen mayor intención de compra que el tráfico orgánico promedio — analizar su conversión por separado.</span></div>
+  </section>
+
+  <section class="section" id="recomendaciones">
+    <div class="section-header">
+      <span class="section-number">05</span>
+      <h2 class="section-title">Recomendaciones — Brasil</h2>
+    </div>
+    <p class="priority-label p1">Prioridad 1 · Acción inmediata</p>
+    <div class="rec-item"><div class="rec-badge p1">P1</div><div class="rec-body"><div class="rec-title">Corregir CLS en resultados de vuelos mobile (objetivo: &lt;100ms)</div><div class="rec-desc">CLS 807ms = raíz de 93,910 dead clicks y 4,204 rage clicks. Reservar dimensiones fijas para todos los elementos del resultado antes de cargar. Evitar inserciones de banners/ads sobre el fold. Usar content-visibility y aspect-ratio en imágenes.</div><div class="rec-metric">Impacto estimado: reducción de 40% en dead clicks mobile</div></div></div>
+    <div class="rec-item"><div class="rec-badge p1">P1</div><div class="rec-body"><div class="rec-title">Corregir botón "Copiar código PIX" en checkout</div><div class="rec-desc">Dead click en el momento más crítico de la transacción — el usuario ya completó el checkout y no puede copiar el código. Verificar event listener en el botón, tamaño táctil (&gt;44px) y que no haya overlay bloqueando. Añadir alternativa: enviar código por email/WhatsApp.</div><div class="rec-metric">Impacto: recuperar 5–8% de pagos iniciados que se abandonan en confirmación</div></div></div>
+    <div class="rec-item"><div class="rec-badge p1">P1</div><div class="rec-body"><div class="rec-title">Resolver JS error _nativeError en checkout mobile (2,153 ocurrencias)</div><div class="rec-desc">Identificar el módulo que genera el error — probablemente el módulo de pagos o analytics. Revisar compatibilidad con versiones de WebView de Android. Activar alertas en Clarity para este error específico.</div></div></div>
+    <div class="rec-item"><div class="rec-badge p1">P1</div><div class="rec-body"><div class="rec-title">Optimizar LCP del checkout (objetivo: &lt;5s)</div><div class="rec-desc">LCP 21.9s en checkout (15–30s en grabaciones). Implementar skeleton screens desde el inicio. Lazy load de módulos no esenciales (seguros, upsells). Priorizar carga del formulario de pasajeros.</div><div class="rec-metric">Meta: LCP &lt;5s en checkout mobile</div></div></div>
+    <p class="priority-label p2">Prioridad 2 · 2–4 semanas</p>
+    <div class="rec-item"><div class="rec-badge p2">P2</div><div class="rec-body"><div class="rec-title">Corregir dead click en autocompletado de ciudades en mobile</div><div class="rec-desc">El dropdown tarda en aparecer — el usuario toca el campo y toca el resultado antes de que esté interactivo. Implementar debounce más agresivo y estado de loading visible mientras el dropdown carga.</div></div></div>
+    <div class="rec-item"><div class="rec-badge p2">P2</div><div class="rec-body"><div class="rec-title">Drawer de cupones disponibles dentro del checkout</div><div class="rec-desc">Usuarios salen de checkout a /beneficios buscando cupones y no regresan. Agregar un drawer "Ver mis cupones disponibles" desde payments-data sin salir del checkout.</div></div></div>
+  </section>
+
+</div><!-- /panel-br -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PANEL ARGENTINA                            -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="panel-ar" class="country-panel" data-country="ar">
+
+  <section class="section" id="resumen">
+    <div class="section-header">
+      <span class="section-number">00</span>
+      <h2 class="section-title">Resumen ejecutivo — <span style="color:var(--accent-ar)">Argentina</span></h2>
+    </div>
+    <div class="exec-banner ar">
+      <p>Argentina registró <strong>38,165 sesiones</strong> en vuelos oneway de un total de 1,052,015 sesiones en el sitio. La <strong>conversión explícita vuelos→checkout es del 19%</strong> (7,264 sesiones con ambos pasos), con 65,345 sesiones totales en checkout (incluyendo accesos directos y retargeting). El perfil es <strong>81.9% mobile</strong> y <strong>72% recurrente</strong>.</p>
+      <p>El CLS (Cumulative Layout Shift — inestabilidad del layout durante la carga) más alto de los tres países (<strong>994ms en mobile</strong>) es la causa directa de 15,706 dead clicks (clics en elementos que no responden) y 3,153 quick backs (retrocesos abruptos del usuario). Los <strong>1,708 errores de JavaScript en checkout mobile</strong> (vs. 52 en desktop — diferencia de 33×) pueden estar bloqueando ventas silenciosamente. El <strong>LCP (Largest Contentful Paint) alcanza 7.3s en vuelos mobile y 11.6s en checkout</strong> — entre 3× y 4.6× por encima del límite de Google. Las grabaciones individuales revelan patrones de usuario de alta intención que completan la compra a pesar de las fricciones.</p>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric-card info">
+        <div class="metric-label">Sesiones en vuelos (P1)</div>
+        <div class="metric-value">38,165</div>
+        <div class="metric-sub">25,125 usuarios únicos</div>
+      </div>
+      <div class="metric-card success">
+        <div class="metric-label">Conversión vuelos→checkout</div>
+        <div class="metric-value success">19%</div>
+        <div class="metric-sub">7,264 sesiones explícitas</div>
+      </div>
+      <div class="metric-card success">
+        <div class="metric-label">Usuarios recurrentes</div>
+        <div class="metric-value success">71.8%</div>
+        <div class="metric-sub">18,047 / 25,125</div>
+      </div>
+      <div class="metric-card danger">
+        <div class="metric-label">CLS mobile (vuelos)</div>
+        <div class="metric-value danger">994ms</div>
+        <div class="metric-sub">Peor de los 3 países</div>
+      </div>
+      <div class="metric-card danger">
+        <div class="metric-label">JS errors checkout mobile</div>
+        <div class="metric-value danger">1,708</div>
+        <div class="metric-sub">vs. 52 en desktop (33×)</div>
+      </div>
+      <div class="metric-card warning">
+        <div class="metric-label">Quick backs mobile</div>
+        <div class="metric-value warning">3,153</div>
+        <div class="metric-sub">10.6× más que desktop</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="funnel">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <h2 class="section-title">Datos del funnel</h2>
+    </div>
+    <div class="funnel">
+      <div class="funnel-step step-1">
+        <div><div class="funnel-step-label">Resultados de vuelos oneway</div><div class="funnel-step-url">/flights/results/oneway/</div></div>
+        <div class="funnel-step-count">38,165 sesiones</div>
+      </div>
+      <div class="funnel-arrow">↓ 81% no sigue el camino directo a checkout</div>
+      <div class="funnel-step step-2-ar">
+        <div><div class="funnel-step-label">Checkout (recorrido explícito)</div><div class="funnel-step-url">/checkout/</div></div>
+        <div class="funnel-step-count">7,264 <span class="funnel-conv ok">19%</span></div>
+      </div>
+    </div>
+    <div class="note">Las 65,345 sesiones totales con /checkout/ superan las 7,264 del funnel directo porque incluyen accesos desde favoritos, retargeting, e-mails y re-entradas. Las 7,264 son sesiones donde el usuario transitó explícitamente por resultados → checkout en el mismo recorrido.</div>
+
+    <hr class="divider">
+    <h3 style="font-family:var(--serif);font-size:18px;font-weight:400;margin-bottom:16px;">Métricas mobile vs desktop (vuelos)</h3>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Mobile — 81.9% del tráfico en vuelos</div>
+        <div class="metric-grid" style="grid-template-columns:1fr 1fr;margin-bottom:0">
+          <div class="metric-card danger"><div class="metric-label">Dead clicks</div><div class="metric-value danger" style="font-size:22px">15,706</div><div class="metric-sub">2.8× más que desktop</div></div>
+          <div class="metric-card danger"><div class="metric-label">Rage clicks</div><div class="metric-value danger" style="font-size:22px">562</div><div class="metric-sub">3.8× más que desktop</div></div>
+          <div class="metric-card danger"><div class="metric-label">Quick backs</div><div class="metric-value danger" style="font-size:22px">3,153</div><div class="metric-sub">10.6× más que desktop</div></div>
+          <div class="metric-card danger"><div class="metric-label">CLS</div><div class="metric-value danger" style="font-size:22px">994ms</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Desktop — 17.1% del tráfico en vuelos</div>
+        <div class="metric-grid" style="grid-template-columns:1fr 1fr;margin-bottom:0">
+          <div class="metric-card warning"><div class="metric-label">Dead clicks</div><div class="metric-value warning" style="font-size:22px">5,619</div></div>
+          <div class="metric-card success"><div class="metric-label">Rage clicks</div><div class="metric-value success" style="font-size:22px">149</div></div>
+          <div class="metric-card success"><div class="metric-label">Quick backs</div><div class="metric-value success" style="font-size:22px">296</div></div>
+          <div class="metric-card warning"><div class="metric-label">CLS</div><div class="metric-value warning" style="font-size:22px">393ms</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="fricciones">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <h2 class="section-title">Fricciones principales</h2>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title danger">Fricción crítica: recarga completa al cambiar fecha</div>
+      <ul class="insight-list">
+        <li><span class="dot dot-danger"></span>Cada cambio de fecha genera recarga completa con LCP 7.3s, pérdida de scroll, filtros y resultados vistos. Principal causa de los 3,153 quick backs en mobile.</li>
+        <li><span class="dot dot-danger"></span>Sesiones con 4+ cambios de fecha (patrón común): 4+ recargas = 4+ experiencias de pantalla en blanco de 7s.</li>
+        <li><span class="dot dot-danger"></span>Grabación documentada: LCP por iteración de fechas 1.7s / 6.8s / 8.6s / 1.7s — alta variabilidad inexplicable.</li>
+      </ul>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Dead clicks documentados en grabaciones</div>
+        <ul class="insight-list">
+          <li><span class="dot dot-danger"></span>"Detalle del pago" (hash o6axsqco) — elemento visualmente clicable que no responde al tap.</li>
+          <li><span class="dot dot-danger"></span>"Sin asistencia" (hash 8rodr7s89) — área táctil insuficiente en selector de seguro.</li>
+          <li><span class="dot dot-danger"></span>"Situación Fiscal IVA Exen" (hash 8b6picn6r) — tap no registrado en formulario de pasajeros.</li>
+          <li><span class="dot dot-danger"></span>"Mercado Pago (Dinero en c...)" — nombre truncado induce dead click en método de pago.</li>
+          <li><span class="dot dot-warning"></span>"Buscar" sin fecha en /vuelos/juj/ — error no visible impide el toque.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Checkout mobile — métricas críticas</div>
+        <div class="metric-grid" style="grid-template-columns:1fr 1fr">
+          <div class="metric-card danger"><div class="metric-label">JS errors</div><div class="metric-value danger" style="font-size:22px">1,708</div><div class="metric-sub">vs. 52 desktop (33×)</div></div>
+          <div class="metric-card danger"><div class="metric-label">Dead clicks</div><div class="metric-value danger" style="font-size:22px">18,966</div></div>
+          <div class="metric-card danger"><div class="metric-label">LCP checkout</div><div class="metric-value danger" style="font-size:22px">11.6s</div></div>
+          <div class="metric-card danger"><div class="metric-label">CLS checkout</div><div class="metric-value danger" style="font-size:22px">721ms</div></div>
+        </div>
+        <div class="note" style="margin-top:10px">1,708 JS errors en mobile pueden estar bloqueando ventas sin feedback visible al usuario. Primer ticket a abrir.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="dispositivos">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <h2 class="section-title">Patrones de sesiones — grabaciones</h2>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title success">Usuario de alta intención (conversor)</div>
+        <ul class="insight-list">
+          <li><span class="dot dot-success"></span>Itera fechas deliberadamente (±1–2 días) — proceso de decisión, no abandono.</li>
+          <li><span class="dot dot-success"></span>Usa lista de favoritos como "carrito" — múltiples compras en 1 sesión (patrón más eficiente observado).</li>
+          <li><span class="dot dot-success"></span>Completa la compra a pesar de dead clicks (dead click en insurance no frena al usuario motivado).</li>
+          <li><span class="dot dot-info"></span>Modal de promociones bancarias puede llevar 28 min — el usuario espera si confía en la plataforma.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title danger">Usuario con fricción acumulada (abandona)</div>
+        <ul class="insight-list">
+          <li><span class="dot dot-danger"></span>Búsqueda sin fecha → error invisible → segundo intento también con dead click.</li>
+          <li><span class="dot dot-danger"></span>Cambio de pasajeros en mobile: LCP 12s, score de performance 17/100.</li>
+          <li><span class="dot dot-danger"></span>Formulario de contacto en mobile con fricción: 5 min sin ingresar texto, abandona sin completar.</li>
+          <li><span class="dot dot-warning"></span>Checkbox de TyC requiere múltiples clics en mobile — área táctil pequeña.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="insights">
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <h2 class="section-title">Hipótesis UX/Producto</h2>
+    </div>
+    <div class="hyp-item"><span class="hyp-code">H1</span><span class="hyp-text">CLS 994ms en mobile es la raíz causa del 85% de los dead clicks. Corregirlo (&lt;100ms) reduciría los dead clicks y quick backs en 50% sin otros cambios.</span></div>
+    <div class="hyp-item"><span class="hyp-code">H2</span><span class="hyp-text">Los 1,708 JS errors en checkout mobile pueden estar bloqueando ventas silenciosamente — el usuario ve la página normal pero el botón no responde. La diferencia de 33× vs. desktop sugiere incompatibilidad con Android WebView.</span></div>
+    <div class="hyp-item"><span class="hyp-code">H3</span><span class="hyp-text">Cambio de fecha con recarga completa genera 4+ experiencias de LCP 7.3s por sesión. Implementar actualización sin reload eliminaría la principal causa de los 3,153 quick backs.</span></div>
+    <div class="hyp-item"><span class="hyp-code">H4</span><span class="hyp-text">La lista de favoritos es el acelerador de compra más potente observado — el usuario benchmark completa 3 transacciones en ~35 min. Promover su uso en usuarios de intención media podría aumentar la conversión.</span></div>
+    <div class="hyp-item"><span class="hyp-code">H5</span><span class="hyp-text">El nombre truncado "Mercado Pago (Dinero en c...)" en la pantalla de pagos genera dead click — el usuario no ve el nombre completo del método y no sabe qué está tocando.</span></div>
+  </section>
+
+  <section class="section" id="recomendaciones">
+    <div class="section-header">
+      <span class="section-number">05</span>
+      <h2 class="section-title">Recomendaciones — Argentina</h2>
+    </div>
+    <p class="priority-label p1">Prioridad 1 · Acción inmediata</p>
+    <div class="rec-item"><div class="rec-badge p1">P1</div><div class="rec-body"><div class="rec-title">Resolver JS errors en checkout mobile (1,708 errores, diferencia 33× vs. desktop)</div><div class="rec-desc">Primer ticket a abrir. Identificar el script que falla — módulo de pagos o analytics. Revisar compatibilidad con versiones de Android WebView. Pueden estar bloqueando ventas sin feedback visible al usuario. Activar alertas en Clarity por tipo de error.</div><div class="rec-metric">Impacto: conversión recuperable estimada 5–10% de sesiones afectadas</div></div></div>
+    <div class="rec-item"><div class="rec-badge p1">P1</div><div class="rec-body"><div class="rec-title">Corregir CLS en mobile — 994ms en vuelos, 721ms en checkout</div><div class="rec-desc">Causa raíz de 15,706 dead clicks y 3,153 quick backs. Reservar dimensiones fijas en tarjetas de resultado, imágenes y banners. Usar content-visibility para elementos fuera del viewport. Auditar inserciones de contenido después del first paint.</div><div class="rec-metric">Meta: CLS &lt;100ms en vuelos mobile</div></div></div>
+    <div class="rec-item"><div class="rec-badge p1">P1</div><div class="rec-body"><div class="rec-title">Cambio de fecha sin recarga completa</div><div class="rec-desc">Implementar actualización de resultados via API (fetch + re-render parcial) sin recargar la URL completa. Preservar scroll position, filtros activos y resultados ya vistos. Elimina la causa principal de los 3,153 quick backs y reduce drásticamente los LCPs repetidos.</div><div class="rec-metric">Meta: reducir quick backs mobile en 50%</div></div></div>
+    <p class="priority-label p2">Prioridad 2 · 2–4 semanas</p>
+    <div class="rec-item"><div class="rec-badge p2">P2</div><div class="rec-body"><div class="rec-title">Corregir elementos con área táctil insuficiente en checkout</div><div class="rec-desc">Documentados en grabaciones: "Sin asistencia" (seguro), "Situación Fiscal IVA", checkbox de Términos y Condiciones. Todos requieren área mínima de 44×44px. Mostrar nombre completo de métodos de pago — "Mercado Pago (Dinero en cuenta)" truncado genera dead click.</div></div></div>
+    <div class="rec-item"><div class="rec-badge p2">P2</div><div class="rec-body"><div class="rec-title">Mostrar resumen del viaje visible en toda la pantalla de checkout</div><div class="rec-desc">Grabación documenta usuario con CBU que vuelve a consultar detalles del vuelo porque la fecha no es visible en payments. Un sticky header de resumen (ruta, fecha, pasajeros) en checkout eliminaría estas salidas y back-navs.</div></div></div>
+    <div class="rec-item"><div class="rec-badge p2">P2</div><div class="rec-body"><div class="rec-title">Promover uso de lista de favoritos</div><div class="rec-desc">El patrón de usuario más eficiente observado: usa favoritos como carrito, completa 3 compras en ~35 min. Mostrar acceso prominente a favoritos desde la SERP de vuelos. Notificación de "precio bajó" en vuelos guardados.</div></div></div>
+  </section>
+
+</div><!-- /panel-ar -->
+
+</div><!-- /container -->
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <span>Análisis generado con Microsoft Clarity · InsightfulPipe MCP · Claude (Anthropic)</span>
+      <span>Período: 23–25 Mayo 2026 · Mercados: México · Brasil · Argentina</span>
+      <span>Consolidado Mayo 2026</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+function switchPanel(id, btn) {
+  document.querySelectorAll('.country-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.switcher-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
